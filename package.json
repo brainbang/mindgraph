@@ -1,0 +1,42 @@
+{
+  "name": "mindgraph",
+  "version": "0.0.1",
+  "description": "Simple graph for Neurosky Mindwave Mobile",
+  "main": "index.html",
+  "window": {
+    "title": "mindgraph",
+    "frame": true,
+    "toolbar": false,
+    "width": 1000,
+    "height": 500
+  },
+  "scripts": {
+    "start": "nwbuild -r .",
+    "build": "nwbuild -o build/ -p win32,win64,osx64,linux32,linux64 ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brainbang/mindgraph.git"
+  },
+  "keywords": [
+    "neurosky",
+    "eeg",
+    "ecg",
+    "brainwaves",
+    "mindwave"
+  ],
+  "author": "David Konsumer <konsumer@jetboystudio.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brainbang/mindgraph/issues"
+  },
+  "homepage": "https://github.com/brainbang/mindgraph",
+  "devDependencies": {
+    "node-webkit-builder": "^1.0.8"
+  },
+  "dependencies": {
+    "flat": "^1.5.0",
+    "node-neurosky": "0.0.1",
+    "smoothie": "^1.27.0"
+  }
+}

@@ -1,0 +1,90 @@
+<style>
+	html, body {
+		margin:0;
+		padding:0;
+	}
+	body {
+		font-family: sans-serif;
+		background: #000;
+		color: #eee;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	h3 {
+		position:absolute;
+		left: 10px;
+	}
+</style>
+<body></body>
+<script>
+var flatten = require('flat');
+var unflatten = flatten.unflatten;
+var smoothie = require('smoothie');
+var TimeSeries = smoothie.TimeSeries;
+var SmoothieChart = smoothie.SmoothieChart;
+
+var bands = {
+	'eSense.attention': [0, 255, 0],
+	'eSense.meditation': [255, 0, 0],
+	'eegPower.delta': [127, 127, 0],
+	'eegPower.theta': [127, 0, 0],
+	'eegPower.lowAlpha': [0, 127, 0],
+	'eegPower.highAlpha': [255, 255, 0],
+	'eegPower.lowBeta': [255, 127, 0],
+	'eegPower.highBeta': [127, 255, 0],
+	'eegPower.lowGamma': [0, 0, 127],
+	'eegPower.highGamma': [255, 0, 127],
+	// 'poorSignalLevel',
+	// 'blinkStrength'
+};
+
+var neurosky = require('node-neurosky');
+
+var client = neurosky.createClient({
+	appName:'NodeNeuroSky',
+	appKey:'0fc4141b4b45c675cc8d3a765b8d71c5bde9390'
+});
+
+var data = {};
+var charts = {};
+var series = {};
+var canvas = {};
+
+var recording = false;
+
+Object.keys(bands).forEach(function(band,i){
+	data[band] = [];
+	charts[band] = new SmoothieChart();
+	series[band] = new TimeSeries();
+	canvas[band] = document.createElement('canvas');
+	canvas[band].width = window.innerWidth;
+	canvas[band].height = 50;
+	document.body.appendChild(canvas[band]);
+	charts[band].addTimeSeries(series[band], {
+		strokeStyle: 'rgba('+bands[band][0]+', '+bands[band][1]+', '+bands[band][2]+', 1)',
+		fillStyle: 'rgba('+bands[band][0]+', '+bands[band][1]+', '+bands[band][2]+', 0.2)',
+		lineWidth: 1
+	});
+	charts[band].streamTo(canvas[band], 500);
+	document.write('<h3 style="top: '+(i*50)+'px">'+band.split('.').pop()+'</h3>');
+});
+
+client.on('data',function(d){
+	var now = (new Date()).getTime();
+	var info = flatten(d);
+	Object.keys(info).forEach(function(band){
+		if (info[band]){
+			if (recording){
+				data[band].push(info[band]);
+			}
+			series[band].append(now, info[band]);
+		}
+	});
+});
+
+client.connect();
+
+
+</script>
+
