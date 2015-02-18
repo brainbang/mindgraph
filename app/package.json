@@ -29,7 +29,7 @@
   "homepage": "https://github.com/brainbang/mindgraph",
   "dependencies": {
     "flat": "^1.5.0",
-    "node-neurosky": "0.0.1",
+    "mindwave": "0.0.2",
     "smoothie": "^1.27.0"
   }
 }

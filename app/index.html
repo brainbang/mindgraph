@@ -15,8 +15,12 @@
 		position:absolute;
 		left: 10px;
 	}
+	select {
+		text-align: center;
+		margin-top: 50%;
+	}
 </style>
-<body></body>
+<body><select id="ports"></select></body>
 <script>
 var flatten = require('flat');
 var unflatten = flatten.unflatten;
@@ -25,26 +29,17 @@ var TimeSeries = smoothie.TimeSeries;
 var SmoothieChart = smoothie.SmoothieChart;
 
 var bands = {
-	'eSense.attention': [0, 255, 0],
-	'eSense.meditation': [255, 0, 0],
-	'eegPower.delta': [127, 127, 0],
-	'eegPower.theta': [127, 0, 0],
-	'eegPower.lowAlpha': [0, 127, 0],
-	'eegPower.highAlpha': [255, 255, 0],
-	'eegPower.lowBeta': [255, 127, 0],
-	'eegPower.highBeta': [127, 255, 0],
-	'eegPower.lowGamma': [0, 0, 127],
-	'eegPower.highGamma': [255, 0, 127],
-	// 'poorSignalLevel',
-	// 'blinkStrength'
+	'attention': [0, 255, 0],
+	'meditation': [255, 0, 0],
+	'delta': [127, 127, 0],
+	'theta': [127, 0, 0],
+	'lowAlpha': [0, 127, 0],
+	'highAlpha': [255, 255, 0],
+	'lowBeta': [255, 127, 0],
+	'highBeta': [127, 255, 0],
+	'lowGamma': [0, 0, 127],
+	'highGamma': [255, 0, 127]
 };
-
-var neurosky = require('node-neurosky');
-
-var client = neurosky.createClient({
-	appName:'NodeNeuroSky',
-	appKey:'0fc4141b4b45c675cc8d3a765b8d71c5bde9390'
-});
 
 var data = {};
 var charts = {};
@@ -67,23 +62,42 @@ Object.keys(bands).forEach(function(band,i){
 		lineWidth: 1
 	});
 	charts[band].streamTo(canvas[band], 500);
-	document.write('<h3 style="top: '+(i*50)+'px">'+band.split('.').pop()+'</h3>');
+	document.write('<h3 style="top: '+(i*50)+'px">'+band+'</h3>');
 });
 
-client.on('data',function(d){
+var Mindwave = require('mindwave');
+var mw = new Mindwave();
+
+mw.on('eeg', function(eeg){
 	var now = (new Date()).getTime();
-	var info = flatten(d);
-	Object.keys(info).forEach(function(band){
-		if (info[band]){
+	Object.keys(bands).forEach(function(band){
+		if (eeg[band]){
 			if (recording){
-				data[band].push(info[band]);
+				data[band].push([now, eeg[band]]);
 			}
-			series[band].append(now, info[band]);
+			series[band].append(now, eeg[band]);
 		}
 	});
 });
 
-client.connect();
+mw.on('attention', function(attention){
+	var now = (new Date()).getTime();
+	if (recording){
+		data['attention'].push([now, attention]);
+	}
+	series['attention'].append(now, attention);
+});
+
+mw.on('meditation', function(meditation){
+	var now = (new Date()).getTime();
+	if (recording){
+		data['meditation'].push([now, meditation]);
+	}
+	series['meditation'].append(now, meditation);
+});
+
+// mw.connect('/dev/cu.MindWaveMobile-DevA');
+
 
 
 </script>

@@ -10,6 +10,8 @@ I don't think it really improves upon the bundled app too much, but eventually m
 
 If you aren't interested in building it yourself, try a [release](https://github.com/brainbang/mindgraph/releases)
 
+Also, I'm [taking votes](https://mindvote.herokuapp.com/) on a better color-scheme.
+
 ## development
 
 Install the build dependencies with `npm install`. You can build runtimes with `npm run build`, and you can test (run on current platform) with `npm start`.
