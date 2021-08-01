@@ -1,0 +1,42 @@
+{
+  "name": "mindgraph",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Simple graphs for Neurosky Mindwave Mobile",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brainbang/mindgraph.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo",
+    "mindwave",
+    "neurosky"
+  ],
+  "author": "David Konsumer <konsumer@jetboystudio.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brainbang/mindgraph/issues"
+  },
+  "homepage": "https://github.com/brainbang/mindgraph#readme",
+  "devDependencies": {
+    "electron": "^13.1.7",
+    "electron-rebuild": "^2.3.5"
+  },
+  "dependencies": {
+    "mindwave": "^0.2.0",
+    "serialport": "^9.2.0",
+    "smoothie": "^1.35.0"
+  },
+  "build": {
+    "appId": "com.brainbang.mindgraph"
+  }
+}

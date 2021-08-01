@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+  background: #000;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+#port {
+  background: #333;
+  padding: 20px;
+  display: block;
+}
+
+#graphs {
+  margin: 20px;
+  text-align: center;
+}
+
+h3 {
+  margin: 0;
+}

@@ -1,0 +1,77 @@
+# This will create a release on tag, build electron app for each OS, and upload as assets for release
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+  
+  build:
+    name: Build release
+    needs: create_release
+    strategy:
+      matrix:
+        os: [windows, macos, ubuntu]
+        include:
+          - os: windows
+            build: |
+              choco install zip
+              npx electron-packager . mindgraph --platform=win32 --arch=x64 --ignore=\.git*
+              mv mindgraph-win32-x64 mindgraph-windows-x64
+              zip -r mindgraph-windows-x64.zip mindgraph-windows-x64
+          
+          - os: macos
+            build: |
+              brew install zip
+              npx electron-packager . mindgraph --platform=darwin --arch=x64 --ignore=\.git*
+              cd mindgraph-darwin-x64
+              zip -r ../mindgraph-macos-x64.zip *
+          
+          - os: ubuntu
+            build: |
+              sudo apt-get install -y zip
+              npx electron-packager . mindgraph --platform=linux --arch=x64 --ignore=\.git*
+              mv mindgraph-linux-x64 mindgraph-ubuntu-x64
+              zip -r mindgraph-ubuntu-x64.zip mindgraph-ubuntu-x64
+
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      
+      - name: Build
+        run: |
+          npm ci
+          ${{ matrix.build }}
+      
+      - name: Upload 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: mindgraph-${{ matrix.os }}-x64.zip
+          asset_name: mindgraph-${{ matrix.os }}-x64.zip
+          asset_content_type: application/zip
